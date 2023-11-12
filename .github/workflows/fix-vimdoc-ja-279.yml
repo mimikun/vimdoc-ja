@@ -1,0 +1,35 @@
+name: Fix vimdoc-ja issue 279
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  autofix:
+    runs-on: ubuntu-latest
+    steps:
+        - name: checkout
+          uses: actions/checkout@v4
+        - name: autofix
+          env:
+            NAME: Yuto Tanaka
+            EMAIL: 13450321+mimikun@users.noreply.github.com
+            UPSTREAM: https://github.com/vim-jp/vimdoc-ja.git
+          run: |
+            git config --global user.name ${NAME}
+            git config --global user.email ${EMAIL}
+
+            git config --global pull.rebase merges
+
+            git remote add upstream ${UPSTREAM}
+
+            git fetch upstream
+
+            git merge --no-edit --allow-unrelated-histories upstream/master
+
+            rm -f doc/tags-ja
+            echo "doc/tags-ja" > .gitignore
+            git commit -am "Fix vimdoc-ja #279"
+
+            git push -f origin fixed
